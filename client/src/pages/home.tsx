@@ -23,10 +23,10 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+      <main className="container mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
           {/* Spin Wheel Section */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             <SpinWheel />
           </div>
           

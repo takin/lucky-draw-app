@@ -89,7 +89,7 @@ export default function ImageCarousel() {
           {/* Carousel Container */}
           <div 
             className="relative overflow-hidden rounded-xl shadow-lg"
-            style={{ height: "400px" }}
+            style={{ height: "300px" }}
             data-testid="carousel-container"
           >
             <AnimatePresence mode="wait">

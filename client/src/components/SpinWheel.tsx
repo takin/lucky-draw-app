@@ -107,7 +107,7 @@ export default function SpinWheel() {
 
   return (
     <Card className="bg-white rounded-2xl shadow-xl">
-      <CardContent className="p-6 lg:p-8">
+      <CardContent className="p-4 lg:p-6">
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
             <Users className="inline-block w-6 h-6 text-blue-500 mr-2" />
@@ -141,7 +141,7 @@ export default function SpinWheel() {
 
         {/* Spinning Wheel Container */}
         <div className="relative flex justify-center items-center">
-          <div className="relative w-80 h-80 mx-auto">
+          <div className="relative w-64 h-64 mx-auto">
             {/* Wheel Pointer */}
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 z-20">
               <div className="w-0 h-0 border-l-4 border-r-4 border-b-8 border-l-transparent border-r-transparent border-b-red-600"></div>
@@ -175,21 +175,21 @@ export default function SpinWheel() {
             </motion.div>
             
             {/* Center circle */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full border-4 border-white shadow-lg z-10 flex items-center justify-center">
-              <Star className="text-white w-6 h-6" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full border-4 border-white shadow-lg z-10 flex items-center justify-center">
+              <Star className="text-white w-4 h-4" />
             </div>
           </div>
         </div>
 
         {/* Control Buttons */}
-        <div className="flex justify-center gap-4 mt-8">
+        <div className="flex justify-center gap-4 mt-6">
           <Button
             onClick={spinWheel}
             disabled={isSpinning}
             data-testid="button-spin"
-            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-4 rounded-xl text-xl font-bold shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl text-lg font-bold shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
-            <Play className="w-6 h-6 mr-3" />
+            <Play className="w-5 h-5 mr-2" />
             {isSpinning ? "BERPUTAR..." : "PUTAR RODA"}
           </Button>
           
@@ -198,7 +198,7 @@ export default function SpinWheel() {
             disabled={isSpinning}
             data-testid="button-reset"
             variant="outline"
-            className="px-6 py-4 rounded-xl font-semibold"
+            className="px-4 py-3 rounded-xl font-semibold"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             Reset
@@ -206,18 +206,18 @@ export default function SpinWheel() {
         </div>
 
         {/* Selected Numbers Display */}
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold text-gray-700 mb-3 text-center">
+        <div className="mt-4">
+          <h3 className="text-base font-semibold text-gray-700 mb-2 text-center">
             Nomor Peserta ({participantCount} total)
           </h3>
-          <div className="bg-gray-50 rounded-xl p-4 max-h-40 overflow-y-auto">
-            <div className="grid grid-cols-10 gap-2" data-testid="participant-numbers">
+          <div className="bg-gray-50 rounded-xl p-3 max-h-32 overflow-y-auto">
+            <div className="grid grid-cols-10 gap-1" data-testid="participant-numbers">
               {segments.map((segment) => (
                 <div
                   key={segment.id}
                   className={`
-                    w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white shadow-sm transition-all duration-200
-                    ${winner === segment.number ? 'ring-4 ring-yellow-400 scale-110 animate-pulse' : ''}
+                    w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold text-white shadow-sm transition-all duration-200
+                    ${winner === segment.number ? 'ring-2 ring-yellow-400 scale-110 animate-pulse' : ''}
                   `}
                   style={{ backgroundColor: segment.color }}
                   data-testid={`participant-${segment.number}`}
