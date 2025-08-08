@@ -205,6 +205,37 @@ export default function SpinWheel() {
           </Button>
         </div>
 
+        {/* Selected Numbers Display */}
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold text-gray-700 mb-3 text-center">
+            Nomor Peserta ({participantCount} total)
+          </h3>
+          <div className="bg-gray-50 rounded-xl p-4 max-h-40 overflow-y-auto">
+            <div className="grid grid-cols-10 gap-2" data-testid="participant-numbers">
+              {segments.map((segment) => (
+                <div
+                  key={segment.id}
+                  className={`
+                    w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white shadow-sm transition-all duration-200
+                    ${winner === segment.number ? 'ring-4 ring-yellow-400 scale-110 animate-pulse' : ''}
+                  `}
+                  style={{ backgroundColor: segment.color }}
+                  data-testid={`participant-${segment.number}`}
+                >
+                  {segment.number}
+                </div>
+              ))}
+            </div>
+          </div>
+          {winner && (
+            <div className="text-center mt-2">
+              <span className="text-sm text-gray-600">
+                Nomor <span className="font-bold text-yellow-600">{winner}</span> terpilih sebagai pemenang!
+              </span>
+            </div>
+          )}
+        </div>
+
         {/* Result Display */}
         <AnimatePresence>
           {winner && !isSpinning && (

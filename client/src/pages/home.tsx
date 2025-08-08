@@ -1,6 +1,6 @@
-import SpinWheel from "@/components/SpinWheel";
-import ImageCarousel from "@/components/ImageCarousel";
-import SponsorSection from "@/components/SponsorSection";
+import SpinWheel from "../components/SpinWheel";
+import ImageCarousel from "../components/ImageCarousel";
+import SponsorSection from "../components/SponsorSection";
 import { Trophy, Users, Images, Handshake } from "lucide-react";
 
 export default function Home() {
@@ -24,9 +24,11 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
           {/* Spin Wheel Section */}
-          <SpinWheel />
+          <div className="space-y-6">
+            <SpinWheel />
+          </div>
           
           {/* Image Carousel Section */}
           <ImageCarousel />
