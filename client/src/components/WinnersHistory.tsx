@@ -19,7 +19,7 @@ export default function WinnersHistory({ winners, onClearHistory }: WinnersHisto
   };
 
   return (
-    <Card className="bg-white rounded-2xl shadow-xl mb-4 h-32">
+    <Card className="bg-white rounded-2xl shadow-xl mb-4 h-36">
       <CardContent className="p-3 lg:p-4 h-full flex flex-col">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-bold text-gray-800">
@@ -75,7 +75,7 @@ export default function WinnersHistory({ winners, onClearHistory }: WinnersHisto
         </div>
 
         {winners.length > 0 && (
-          <div className="mt-2 text-center text-xs text-gray-500">
+          <div className="mt-auto pt-2 text-center text-xs text-gray-500">
             Total: {winners.length} pemenang
           </div>
         )}
