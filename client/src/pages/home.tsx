@@ -20,7 +20,7 @@ export default function Home() {
       <header className="bg-white shadow-lg border-b-4 border-blue-500">
         <div className="container mx-auto px-4 py-6">
           <h1 className="font-bold text-center leading-tight">
-            <div className="text-3xl md:text-5xl bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent mb-2">
+            <div className="text-3xl md:text-5xl text-blue-600 mb-2">
               FUNWALK
             </div>
             <div className="text-2xl md:text-3xl bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
