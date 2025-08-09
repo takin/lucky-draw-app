@@ -205,8 +205,6 @@ export default function SpinWheel() {
           </Button>
         </div>
 
-
-
         {/* Result Display */}
         <AnimatePresence>
           {winner && !isSpinning && (
