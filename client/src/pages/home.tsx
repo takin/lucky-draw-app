@@ -19,9 +19,13 @@ export default function Home() {
       {/* Header */}
       <header className="bg-white shadow-lg border-b-4 border-blue-500">
         <div className="container mx-auto px-4 py-6">
-          <h1 className="text-2xl md:text-4xl font-bold text-center text-gray-800 leading-tight">
-            <span className="text-blue-600">UNDIAN DOORPRIZE</span><br />
-            <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">FUNWALK CLUSTER MONTERREY CITRALAND</span>
+          <h1 className="font-bold text-center leading-tight">
+            <div className="text-3xl md:text-5xl bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent mb-2">
+              FUNWALK
+            </div>
+            <div className="text-2xl md:text-3xl bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+              CLUSTER MONTERREY CITRALAND
+            </div>
           </h1>
           <div className="text-center mt-2">
             <span className="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
