@@ -21,7 +21,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-6">
           <h1 className="text-2xl md:text-4xl font-bold text-center text-gray-800 leading-tight">
             <span className="text-blue-600">UNDIAN DOORPRIZE</span><br />
-            <span className="text-gray-700">FUNWALK CLUSTER MONTERREY CITRALAND</span>
+            <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">FUNWALK CLUSTER MONTERREY CITRALAND</span>
           </h1>
           <div className="text-center mt-2">
             <span className="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
