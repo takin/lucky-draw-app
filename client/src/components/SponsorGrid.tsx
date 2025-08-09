@@ -25,9 +25,9 @@ export default function SponsorGrid() {
   ];
 
   return (
-    <Card className="bg-white rounded-2xl shadow-xl h-[600px]">
-      <CardContent className="p-4 lg:p-6 h-full flex flex-col">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+    <Card className="bg-white rounded-2xl shadow-xl h-[480px]">
+      <CardContent className="p-3 lg:p-4 h-full flex flex-col">
+        <h2 className="text-xl font-bold text-center text-gray-800 mb-4">
           <Handshake className="inline-block w-6 h-6 text-blue-500 mr-2" />
           Sponsor & Partner
         </h2>
@@ -57,8 +57,8 @@ export default function SponsorGrid() {
           ))}
         </div>
 
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-600">
+        <div className="text-center mt-4">
+          <p className="text-xs text-gray-600">
             Terima kasih kepada semua sponsor dan partner yang telah mendukung acara ini
           </p>
         </div>
