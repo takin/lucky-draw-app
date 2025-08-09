@@ -144,29 +144,59 @@ export default function SpinWheel() {
           </Button>
         </div>
 
-        {/* Result Display */}
+        {/* Winner Popup Modal */}
         <AnimatePresence>
           {winner && !isSpinning && (
             <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              transition={{ type: "spring", duration: 0.6 }}
-              className="mt-6"
-              data-testid="result-display"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+              data-testid="winner-modal"
+              onClick={() => setWinner(null)}
             >
-              <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-6 rounded-xl shadow-lg text-center">
-                <h3 className="text-2xl font-bold mb-2">
-                  <Trophy className="inline-block w-6 h-6 mr-2" />
-                  PEMENANG!
-                </h3>
-                <div className="text-4xl font-bold" data-testid="winner-number">
-                  {winner}
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                exit={{ scale: 0, rotate: 180 }}
+                transition={{ 
+                  type: "spring", 
+                  duration: 0.8,
+                  bounce: 0.4
+                }}
+                className="bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-8 rounded-3xl shadow-2xl text-white text-center max-w-md mx-4 relative"
+                onClick={(e) => e.stopPropagation()}
+                data-testid="result-display"
+              >
+                {/* Confetti Effect */}
+                <div className="absolute inset-0 overflow-hidden rounded-3xl">
+                  <div className="absolute -top-2 -left-2 w-4 h-4 bg-white rounded-full animate-bounce"></div>
+                  <div className="absolute -top-1 right-4 w-3 h-3 bg-yellow-200 rounded-full animate-bounce delay-200"></div>
+                  <div className="absolute top-3 -right-2 w-5 h-5 bg-orange-200 rounded-full animate-bounce delay-500"></div>
+                  <div className="absolute -bottom-2 left-4 w-4 h-4 bg-red-200 rounded-full animate-bounce delay-300"></div>
+                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-white rounded-full animate-bounce delay-700"></div>
                 </div>
-                <p className="text-sm mt-2 opacity-90">
-                  Selamat kepada peserta nomor {winner}!
-                </p>
-              </div>
+                
+                <div className="relative z-10">
+                  <h3 className="text-3xl font-bold mb-4 drop-shadow-lg">
+                    <Trophy className="inline-block w-8 h-8 mr-3" />
+                    PEMENANG!
+                  </h3>
+                  <div className="text-7xl font-bold mb-4 drop-shadow-xl" data-testid="winner-number">
+                    {winner.toString().padStart(3, '0')}
+                  </div>
+                  <p className="text-lg mb-6 drop-shadow-md">
+                    🎉 Selamat kepada peserta nomor {winner}! 🎉
+                  </p>
+                  <button
+                    onClick={() => setWinner(null)}
+                    className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 border border-white/30"
+                    data-testid="button-close-modal"
+                  >
+                    Tutup
+                  </button>
+                </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
