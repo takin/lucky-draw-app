@@ -25,14 +25,14 @@ export default function SponsorGrid() {
   ];
 
   return (
-    <Card className="bg-white rounded-2xl shadow-xl">
-      <CardContent className="p-4 lg:p-6">
+    <Card className="bg-white rounded-2xl shadow-xl h-[600px]">
+      <CardContent className="p-4 lg:p-6 h-full flex flex-col">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
           <Handshake className="inline-block w-6 h-6 text-blue-500 mr-2" />
           Sponsor & Partner
         </h2>
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" data-testid="sponsor-grid">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 flex-1" data-testid="sponsor-grid">
           {sponsors.map((sponsor, index) => (
             <motion.div
               key={sponsor.id}

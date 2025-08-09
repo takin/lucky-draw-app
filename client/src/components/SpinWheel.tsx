@@ -67,8 +67,8 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
   };
 
   return (
-    <Card className="bg-white rounded-2xl shadow-xl">
-      <CardContent className="p-4 lg:p-6">
+    <Card className="bg-white rounded-2xl shadow-xl h-[600px]">
+      <CardContent className="p-4 lg:p-6 h-full flex flex-col">
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
             <Users className="inline-block w-6 h-6 text-blue-500 mr-2" />
@@ -101,8 +101,8 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
         </div>
 
         {/* Spinning Number Display */}
-        <div className="relative flex justify-center items-center">
-          <div className="relative bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 shadow-2xl">
+        <div className="relative flex justify-center items-center flex-1">
+          <div className="relative bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 shadow-2xl">
             <div className="bg-black/20 rounded-2xl p-6 backdrop-blur-sm">
               <div className="text-center">
                 <div className="text-white/70 text-sm font-semibold mb-2">NOMOR PESERTA</div>
@@ -138,7 +138,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
         </div>
 
         {/* Control Buttons */}
-        <div className="flex justify-center gap-4 mt-6">
+        <div className="flex justify-center gap-4 mt-4">
           <Button
             onClick={spinNumbers}
             disabled={isSpinning}
