@@ -89,21 +89,25 @@ export default function SpinWheel() {
             <div className="bg-black/20 rounded-2xl p-6 backdrop-blur-sm">
               <div className="text-center">
                 <div className="text-white/70 text-sm font-semibold mb-2">NOMOR PESERTA</div>
-                <motion.div
-                  className="text-8xl font-bold text-white font-mono tracking-wider"
-                  animate={isSpinning ? { 
-                    scale: [1, 1.1, 1],
-                    rotateY: [0, 360, 720, 1080] 
-                  } : {}}
-                  transition={{ 
-                    duration: isSpinning ? 4 : 0,
-                    ease: isSpinning ? [0.23, 1, 0.320, 1] : "linear",
-                    repeat: isSpinning ? 0 : 0
-                  }}
-                  data-testid="number-display"
-                >
-                  {isSpinning ? currentNumber.toString().padStart(3, '0') : (winner ? winner.toString().padStart(3, '0') : "000")}
-                </motion.div>
+                <div className="relative overflow-hidden h-24 flex items-center justify-center">
+                  <motion.div
+                    className="text-8xl font-bold text-white font-mono tracking-wider"
+                    animate={isSpinning ? { 
+                      y: [-50, 50],
+                      scale: [0.8, 1.2, 0.8]
+                    } : {}}
+                    transition={{ 
+                      duration: isSpinning ? 0.05 : 0,
+                      ease: "easeInOut",
+                      repeat: isSpinning ? Infinity : 0,
+                      repeatType: "reverse"
+                    }}
+                    key={currentNumber} // Force re-render when number changes
+                    data-testid="number-display"
+                  >
+                    {isSpinning ? currentNumber.toString().padStart(3, '0') : (winner ? winner.toString().padStart(3, '0') : "000")}
+                  </motion.div>
+                </div>
                 <div className="text-white/50 text-xs mt-2">1 - {participantCount}</div>
               </div>
             </div>
