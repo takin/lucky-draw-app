@@ -1,9 +1,20 @@
-import SpinWheel from "../components/SpinWheel";
+import { useState } from "react";
+import SpinWheel, { WinnerRecord } from "../components/SpinWheel";
 import ImageCarousel from "../components/ImageCarousel";
 import SponsorSection from "../components/SponsorSection";
+import WinnersHistory from "../components/WinnersHistory";
 import { Trophy, Users, Images, Handshake } from "lucide-react";
 
 export default function Home() {
+  const [winners, setWinners] = useState<WinnerRecord[]>([]);
+
+  const handleWinnerChange = (newWinners: WinnerRecord[]) => {
+    setWinners(newWinners);
+  };
+
+  const clearWinnersHistory = () => {
+    setWinners([]);
+  };
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -24,10 +35,16 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
+        {/* Winners History Section */}
+        <WinnersHistory 
+          winners={winners} 
+          onClearHistory={clearWinnersHistory}
+        />
+
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
           {/* Spin Wheel Section */}
           <div className="space-y-4">
-            <SpinWheel />
+            <SpinWheel onWinnerChange={handleWinnerChange} />
           </div>
           
           {/* Image Carousel Section */}

@@ -5,11 +5,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Users, Play, RotateCcw, Trophy } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function SpinWheel() {
+export interface WinnerRecord {
+  number: number;
+  timestamp: Date;
+}
+
+interface SpinWheelProps {
+  onWinnerChange?: (winners: WinnerRecord[]) => void;
+}
+
+export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
   const [participantCount, setParticipantCount] = useState(10);
   const [isSpinning, setIsSpinning] = useState(false);
   const [winner, setWinner] = useState<number | null>(null);
   const [currentNumber, setCurrentNumber] = useState<number>(1);
+  const [winners, setWinners] = useState<WinnerRecord[]>([]);
 
   const updateParticipants = () => {
     if (participantCount >= 2 && participantCount <= 1000) {
@@ -39,6 +49,9 @@ export default function SpinWheel() {
       const randomWinner = Math.floor(Math.random() * participantCount) + 1;
       setWinner(randomWinner);
       setCurrentNumber(randomWinner);
+      const newWinners = [...winners, { number: randomWinner, timestamp: new Date() }];
+      setWinners(newWinners);
+      onWinnerChange?.(newWinners);
       setIsSpinning(false);
     }, 4000);
   };
@@ -47,6 +60,10 @@ export default function SpinWheel() {
     if (isSpinning) return;
     setWinner(null);
     setCurrentNumber(1);
+  };
+
+  const clearWinners = () => {
+    setWinners([]);
   };
 
   return (
