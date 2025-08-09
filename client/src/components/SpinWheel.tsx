@@ -9,11 +9,12 @@ export default function SpinWheel() {
   const [participantCount, setParticipantCount] = useState(10);
   const [isSpinning, setIsSpinning] = useState(false);
   const [winner, setWinner] = useState<number | null>(null);
-  const [currentNumber, setCurrentNumber] = useState<number>(0);
+  const [currentNumber, setCurrentNumber] = useState<number>(1);
 
   const updateParticipants = () => {
     if (participantCount >= 2 && participantCount <= 1000) {
       setWinner(null);
+      setCurrentNumber(1);
     }
   };
 
@@ -22,11 +23,15 @@ export default function SpinWheel() {
     
     setIsSpinning(true);
     setWinner(null);
+    setCurrentNumber(1);
     
     // Animate numbers rapidly changing
+    let counter = 0;
     const interval = setInterval(() => {
-      setCurrentNumber(Math.floor(Math.random() * participantCount) + 1);
-    }, 100);
+      counter++;
+      const randomNum = Math.floor(Math.random() * participantCount) + 1;
+      setCurrentNumber(randomNum);
+    }, 50); // Faster animation - every 50ms
     
     // Generate final winner after 4 seconds
     setTimeout(() => {
@@ -41,7 +46,7 @@ export default function SpinWheel() {
   const resetNumbers = () => {
     if (isSpinning) return;
     setWinner(null);
-    setCurrentNumber(0);
+    setCurrentNumber(1);
   };
 
   return (
@@ -97,7 +102,7 @@ export default function SpinWheel() {
                   }}
                   data-testid="number-display"
                 >
-                  {isSpinning ? currentNumber : (winner || "000")}
+                  {isSpinning ? currentNumber.toString().padStart(3, '0') : (winner ? winner.toString().padStart(3, '0') : "000")}
                 </motion.div>
                 <div className="text-white/50 text-xs mt-2">1 - {participantCount}</div>
               </div>
