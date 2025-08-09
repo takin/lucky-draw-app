@@ -1,9 +1,8 @@
 import { useState } from "react";
 import SpinWheel, { WinnerRecord } from "../components/SpinWheel";
-import ImageCarousel from "../components/ImageCarousel";
-import SponsorSection from "../components/SponsorSection";
+import SponsorGrid from "../components/SponsorGrid";
 import WinnersHistory from "../components/WinnersHistory";
-import { Trophy, Users, Images, Handshake } from "lucide-react";
+import { Trophy, Users, Handshake } from "lucide-react";
 
 export default function Home() {
   const [winners, setWinners] = useState<WinnerRecord[]>([]);
@@ -47,13 +46,10 @@ export default function Home() {
             <SpinWheel onWinnerChange={handleWinnerChange} />
           </div>
           
-          {/* Image Carousel Section */}
-          <ImageCarousel />
+          {/* Sponsor Grid Section */}
+          <SponsorGrid />
         </div>
       </main>
-
-      {/* Sponsor Section */}
-      <SponsorSection />
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-6 mt-8">
