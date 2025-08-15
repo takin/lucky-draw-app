@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Users, Play, RotateCcw, Trophy } from 'lucide-react';
+import { Users, Play, RotateCcw, Trophy, Volume2, VolumeX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export interface WinnerRecord {
@@ -21,6 +21,129 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
   const [currentNumber, setCurrentNumber] = useState<number>(1);
   const [winners, setWinners] = useState<WinnerRecord[]>([]);
   const [isParticipantSet, setIsParticipantSet] = useState(false);
+  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
+
+  // Audio refs
+  const spinningAudioRef = useRef<(() => () => void) | null>(null);
+  const winnerAudioRef = useRef<(() => AudioContext) | null>(null);
+
+  // Initialize audio elements
+  useEffect(() => {
+    // Create spinning sound (tick sound) using Web Audio API
+    const createSpinningSound = () => {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+      // Create a ticking sound that plays every 50ms during spinning
+      const playTick = () => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // Vary the frequency slightly for more interesting sound
+        const baseFreq = 600;
+        const variation = Math.random() * 100 - 50; // ±50 Hz variation
+        oscillator.frequency.setValueAtTime(baseFreq + variation, audioContext.currentTime);
+        oscillator.type = 'sine';
+        gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.05);
+      };
+
+      // Play tick sound immediately
+      playTick();
+
+      // Set up interval to play tick sound every 50ms
+      const tickInterval = setInterval(playTick, 50);
+
+      // Return cleanup function
+      return () => {
+        clearInterval(tickInterval);
+        audioContext.close();
+      };
+    };
+
+    // Create winner sound (confetti celebration sound) using Web Audio API
+    const createWinnerSound = () => {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+      // Create multiple oscillators for a rich confetti-like sound
+      const createConfettiSound = () => {
+        // Create multiple overlapping sounds for confetti effect
+        for (let i = 0; i < 8; i++) {
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          const filter = audioContext.createBiquadFilter();
+
+          oscillator.connect(filter);
+          filter.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+
+          // Random frequency for confetti-like effect
+          const baseFreq = 200 + Math.random() * 800;
+          const delay = Math.random() * 0.5; // Random delay up to 0.5s
+          const duration = 0.3 + Math.random() * 0.4; // Random duration
+
+          oscillator.frequency.setValueAtTime(baseFreq, audioContext.currentTime + delay);
+          oscillator.type = 'sawtooth'; // Rich harmonic content
+
+          // Filter for more natural sound
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(2000 + Math.random() * 1000, audioContext.currentTime + delay);
+          filter.Q.setValueAtTime(0.5, audioContext.currentTime + delay);
+
+          // Envelope for confetti-like attack and decay
+          gainNode.gain.setValueAtTime(0, audioContext.currentTime + delay);
+          gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + delay + 0.01);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + delay + duration);
+
+          oscillator.start(audioContext.currentTime + delay);
+          oscillator.stop(audioContext.currentTime + delay + duration);
+        }
+
+        // Add some high-pitched sparkle sounds
+        for (let i = 0; i < 5; i++) {
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+
+          const sparkleFreq = 1500 + Math.random() * 1000;
+          const delay = Math.random() * 0.8;
+          const duration = 0.1 + Math.random() * 0.2;
+
+          oscillator.frequency.setValueAtTime(sparkleFreq, audioContext.currentTime + delay);
+          oscillator.type = 'sine';
+
+          gainNode.gain.setValueAtTime(0, audioContext.currentTime + delay);
+          gainNode.gain.linearRampToValueAtTime(0.05, audioContext.currentTime + delay + 0.005);
+          gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + delay + duration);
+
+          oscillator.start(audioContext.currentTime + delay);
+          oscillator.stop(audioContext.currentTime + delay + duration);
+        }
+      };
+
+      // Play the confetti sound
+      createConfettiSound();
+
+      return audioContext;
+    };
+
+    // Store the audio creation functions
+    spinningAudioRef.current = createSpinningSound;
+    winnerAudioRef.current = createWinnerSound;
+
+    // Cleanup function
+    return () => {
+      spinningAudioRef.current = null;
+      winnerAudioRef.current = null;
+    };
+  }, []);
 
   const updateParticipants = () => {
     if (participantCount >= 2 && participantCount <= 1000) {
@@ -38,6 +161,16 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
     setWinner(null);
     setCurrentNumber(1);
 
+    // Start spinning sound
+    if (spinningAudioRef.current && isSoundEnabled) {
+      const stopSpinningSound = spinningAudioRef.current();
+
+      // Stop the spinning sound after 4 seconds
+      setTimeout(() => {
+        stopSpinningSound();
+      }, 4000);
+    }
+
     // Animate numbers rapidly changing
     let counter = 0;
     const interval = setInterval(() => {
@@ -49,9 +182,16 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
     // Generate final winner after 4 seconds
     setTimeout(() => {
       clearInterval(interval);
+
       const randomWinner = Math.floor(Math.random() * participantCount) + 1;
       setWinner(randomWinner);
       setCurrentNumber(randomWinner);
+
+      // Play winner sound
+      if (winnerAudioRef.current && isSoundEnabled) {
+        winnerAudioRef.current();
+      }
+
       const newWinners = [...winners, { number: randomWinner, timestamp: new Date() }];
       setWinners(newWinners);
       onWinnerChange?.(newWinners);
@@ -61,6 +201,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
 
   const resetNumbers = () => {
     if (isSpinning) return;
+
     setWinner(null);
     setCurrentNumber(1);
     setIsParticipantSet(false);
@@ -68,6 +209,10 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
 
   const clearWinners = () => {
     setWinners([]);
+  };
+
+  const closeWinnerModal = () => {
+    setWinner(null);
   };
 
   return (
@@ -85,6 +230,26 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
               <h2 className='text-6xl font-bold text-yellow-600'>{participantCount}</h2>
               <h3 className='text-yellow-800 mb-4'>Total Peserta</h3>
             </div>
+
+            {/* Sound Toggle Button */}
+            <Button
+              onClick={() => setIsSoundEnabled(!isSoundEnabled)}
+              variant='outline'
+              size='sm'
+              className='w-fit mx-auto'
+            >
+              {isSoundEnabled ? (
+                <>
+                  <Volume2 className='w-4 h-4 mr-2' />
+                  Sound On
+                </>
+              ) : (
+                <>
+                  <VolumeX className='w-4 h-4 mr-2' />
+                  Sound Off
+                </>
+              )}
+            </Button>
             <Button
               onClick={spinNumbers}
               disabled={isSpinning}
@@ -185,7 +350,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
               exit={{ opacity: 0 }}
               className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm'
               data-testid='winner-modal'
-              onClick={() => setWinner(null)}
+              onClick={closeWinnerModal}
             >
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
@@ -219,7 +384,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
                   </div>
                   <p className='text-lg mb-6 drop-shadow-md'>🎉 Selamat kepada peserta nomor {winner}! 🎉</p>
                   <button
-                    onClick={() => setWinner(null)}
+                    onClick={closeWinnerModal}
                     className='bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 border border-white/30'
                     data-testid='button-close-modal'
                   >
