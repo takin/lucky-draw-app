@@ -51,7 +51,7 @@ export default function SponsorGrid() {
         </h2>
 
         <div
-          className='items-center grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-2 flex-1'
+          className='items-center grid grid-cols-2 md:grid-cols-3 lg:grid-cols-10 gap-2 flex-1'
           data-testid='sponsor-grid'
         >
           {sponsors.map((sponsor, index) => (
@@ -60,7 +60,7 @@ export default function SponsorGrid() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.05 }}
-              className='bg-gray-50 rounded-xl p-4 flex items-center justify-center h-24 hover:shadow-md hover:bg-gray-100 transition-all cursor-pointer group border border-gray-200'
+              className='bg-gray-50 rounded-xl p-2 flex items-center justify-center h-24 hover:shadow-md hover:bg-gray-100 transition-all cursor-pointer group border border-gray-200'
               data-testid={`sponsor-${sponsor.id}`}
             >
               {sponsor.logo ? (
@@ -69,7 +69,7 @@ export default function SponsorGrid() {
                   alt={`${sponsor.name} logo`}
                   width={100}
                   height={100}
-                  className='max-w-full max-h-full object-contain'
+                  className='max-w-full max-h-full object-cover'
                 />
               ) : (
                 <span className='text-gray-500 font-semibold text-sm text-center group-hover:text-gray-700 transition-colors'>
