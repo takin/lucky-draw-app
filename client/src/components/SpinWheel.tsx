@@ -366,7 +366,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
                   duration: 0.8,
                   bounce: 0.4,
                 }}
-                className='bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-8 rounded-3xl shadow-2xl text-white text-center max-w-lg mx-4 relative'
+                className='bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-8 rounded-3xl shadow-2xl text-white text-center w-[30%] h-[40%] mx-4 relative'
                 onClick={(e) => e.stopPropagation()}
                 data-testid='result-display'
               >
@@ -379,7 +379,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
                   <div className='absolute -bottom-1 -right-1 w-3 h-3 bg-white rounded-full animate-bounce delay-700'></div>
                 </div>
 
-                <div className='relative z-10'>
+                <div className='relative z-10 h-full flex flex-col items-center justify-center'>
                   <h3 className='text-3xl font-bold mb-4 drop-shadow-lg'>
                     <Trophy className='inline-block w-8 h-8 mr-3' />
                     PEMENANG!
@@ -388,13 +388,15 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
                     {winner.toString().padStart(3, '0')}
                   </div>
                   <p className='text-lg mb-6 drop-shadow-md'>🎉 Selamat kepada peserta nomor {winner}! 🎉</p>
-                  <button
-                    onClick={closeWinnerModal}
-                    className='bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 border border-white/30'
-                    data-testid='button-close-modal'
-                  >
-                    Tutup
-                  </button>
+                  <div className='flex flex-row gap-4 mt-6'>
+                    <button
+                      onClick={closeWinnerModal}
+                      className='bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 border border-white/30'
+                      data-testid='button-close-modal'
+                    >
+                      Tutup
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             </motion.div>
