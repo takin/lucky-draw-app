@@ -17,11 +17,12 @@ interface SpinWheelProps {
 export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
   const [participantCount, setParticipantCount] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [winner, setWinner] = useState<number | null>(null);
-  const [currentNumber, setCurrentNumber] = useState<number>(1);
   const [winners, setWinners] = useState<WinnerRecord[]>([]);
+  const [currentWinners, setCurrentWinners] = useState<number[]>([]);
+  const [currentNumber, setCurrentNumber] = useState<number>(1);
   const [isParticipantSet, setIsParticipantSet] = useState(false);
   const [isSoundEnabled, setIsSoundEnabled] = useState(true);
+  const [showWinnerModal, setShowWinnerModal] = useState(false);
 
   // Audio refs
   const spinningAudioRef = useRef<(() => () => void) | null>(null);
@@ -147,10 +148,9 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
 
   const updateParticipants = () => {
     if (participantCount >= 2 && participantCount <= 1000) {
-      setWinner(null);
+      setCurrentWinners([]);
       setCurrentNumber(1);
       setIsParticipantSet(true);
-      console.log('participantCount', participantCount);
     }
   };
 
@@ -158,8 +158,9 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
     if (isSpinning) return;
 
     setIsSpinning(true);
-    setWinner(null);
+    setCurrentWinners([]);
     setCurrentNumber(1);
+    setShowWinnerModal(false);
 
     // Start spinning sound
     if (spinningAudioRef.current && isSoundEnabled) {
@@ -168,7 +169,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
       // Stop the spinning sound after 4 seconds
       setTimeout(() => {
         stopSpinningSound();
-      }, 4000);
+      }, 3000);
     }
 
     // Animate numbers rapidly changing
@@ -179,31 +180,55 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
       setCurrentNumber(randomNum);
     }, 50); // Faster animation - every 50ms
 
-    // Generate final winner after 4 seconds
+    // Generate final winners after 3 seconds
     setTimeout(() => {
       clearInterval(interval);
 
-      const randomWinner = Math.floor(Math.random() * participantCount) + 1;
-      setWinner(randomWinner);
-      setCurrentNumber(randomWinner);
+      // Generate 10 unique winners
+      const newWinners: number[] = [];
+      const availableNumbers = Array.from({ length: participantCount }, (_, i) => i + 1);
+
+      // Shuffle the available numbers
+      for (let i = availableNumbers.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [availableNumbers[i], availableNumbers[j]] = [availableNumbers[j], availableNumbers[i]];
+      }
+
+      // Take the first 10 (or all if less than 10 participants)
+      const winnerCount = Math.min(10, participantCount);
+      for (let i = 0; i < winnerCount; i++) {
+        newWinners.push(availableNumbers[i]);
+      }
+
+      // Sort winners for better display
+      newWinners.sort((a, b) => a - b);
+
+      setCurrentWinners(newWinners);
+      setCurrentNumber(newWinners[0]); // Show first winner in the display
 
       // Play winner sound
       if (winnerAudioRef.current && isSoundEnabled) {
         winnerAudioRef.current();
       }
 
-      const newWinners = [...winners, { number: randomWinner, timestamp: new Date() }];
-      setWinners(newWinners);
-      onWinnerChange?.(newWinners);
+      // Add all winners to the history
+      const timestamp = new Date();
+      const newWinnerRecords = newWinners.map((number) => ({ number, timestamp }));
+      const updatedWinners = [...winners, ...newWinnerRecords];
+      setWinners(updatedWinners);
+      onWinnerChange?.(updatedWinners);
+
       setIsSpinning(false);
-    }, 4000);
+      setShowWinnerModal(true);
+    }, 3000);
   };
 
   const resetNumbers = () => {
     if (isSpinning) return;
 
-    setWinner(null);
+    setCurrentWinners([]);
     setCurrentNumber(1);
+    setShowWinnerModal(false);
     setIsParticipantSet(false);
   };
 
@@ -212,7 +237,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
   };
 
   const closeWinnerModal = () => {
-    setWinner(null);
+    setShowWinnerModal(false);
   };
 
   return (
@@ -308,7 +333,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
                 <div className='text-white/70 text-sm font-semibold mb-2'>NOMOR PESERTA</div>
                 <div className='relative overflow-hidden h-24 flex items-center justify-center'>
                   <motion.div
-                    className='text-8xl font-bold text-white font-mono tracking-wider'
+                    className='text-6xl font-bold text-white font-mono tracking-wider'
                     animate={
                       isSpinning
                         ? {
@@ -327,10 +352,10 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
                     data-testid='number-display'
                   >
                     {isSpinning
-                      ? currentNumber.toString().padStart(3, '0')
-                      : winner
-                      ? winner.toString().padStart(3, '0')
-                      : '000'}
+                      ? currentNumber.toString().padStart(5, '0')
+                      : currentWinners.length > 0
+                      ? currentWinners[0].toString().padStart(5, '0')
+                      : '00000'}
                   </motion.div>
                 </div>
                 <div className='text-white/50 text-xs mt-2'>1 - {participantCount}</div>
@@ -348,7 +373,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
 
         {/* Winner Popup Modal */}
         <AnimatePresence>
-          {winner && !isSpinning && (
+          {showWinnerModal && currentWinners.length > 0 && !isSpinning && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -366,7 +391,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
                   duration: 0.8,
                   bounce: 0.4,
                 }}
-                className='bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-8 rounded-3xl shadow-2xl text-white text-center w-[30%] h-[40%] mx-4 relative'
+                className='bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-8 rounded-3xl shadow-2xl text-white text-center w-[80%] max-w-4xl h-[80%] mx-4 relative overflow-y-auto'
                 onClick={(e) => e.stopPropagation()}
                 data-testid='result-display'
               >
@@ -380,14 +405,30 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
                 </div>
 
                 <div className='relative z-10 h-full flex flex-col items-center justify-center'>
-                  <h3 className='text-3xl font-bold mb-4 drop-shadow-lg'>
-                    <Trophy className='inline-block w-8 h-8 mr-3' />
+                  <h3 className='text-4xl font-bold mb-6 drop-shadow-lg'>
+                    <Trophy className='inline-block w-10 h-10 mr-3' />
                     PEMENANG!
                   </h3>
-                  <div className='text-7xl font-bold mb-4 drop-shadow-xl' data-testid='winner-number'>
-                    {winner.toString().padStart(3, '0')}
+                  <p className='text-xl mb-6 drop-shadow-md'>🎉 Selamat kepada {currentWinners.length} pemenang! 🎉</p>
+
+                  {/* Winners Grid */}
+                  <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8 w-full max-w-4xl'>
+                    {currentWinners.map((winner, index) => (
+                      <motion.div
+                        key={winner}
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: index * 0.1 }}
+                        className='bg-white/20 backdrop-blur-sm rounded-2xl p-4 border border-white/30'
+                      >
+                        <div className='text-3xl font-bold mb-2 drop-shadow-xl'>
+                          {winner.toString().padStart(5, '0')}
+                        </div>
+                        <div className='text-sm opacity-80'>Pemenang #{index + 1}</div>
+                      </motion.div>
+                    ))}
                   </div>
-                  <p className='text-lg mb-6 drop-shadow-md'>🎉 Selamat kepada peserta nomor {winner}! 🎉</p>
+
                   <div className='flex flex-row gap-4 mt-6'>
                     <button
                       onClick={closeWinnerModal}

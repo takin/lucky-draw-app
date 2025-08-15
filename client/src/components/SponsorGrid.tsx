@@ -51,7 +51,7 @@ export default function SponsorGrid() {
         </h2>
 
         <div
-          className='items-center grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4 flex-1'
+          className='items-center grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-2 flex-1'
           data-testid='sponsor-grid'
         >
           {sponsors.map((sponsor, index) => (
