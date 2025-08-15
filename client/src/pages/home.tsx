@@ -49,8 +49,8 @@ export default function Home() {
 
       {/* Main Content */}
       <main className='container mx-auto px-4 py-6 xl:h-[calc(100vh-180px)]'>
-        <div className='flex flex-col gap-4 h-full xl:grid-cols-2'>
-          <div className='flex h-[40%] w-full'>
+        <div className='flex flex-col gap-4 h-full xl:grid-cols-2 justify-around'>
+          <div className='flex h-[45%] w-full'>
             <div className='grid grid-cols-1 xl:grid-cols-2 gap-6 items-start mb-4 h-full w-full'>
               {/* Spin Wheel Section */}
               <SpinWheel onWinnerChange={handleWinnerChange} />
@@ -58,7 +58,7 @@ export default function Home() {
               <WinnersHistory winners={winners} onClearHistory={clearWinnersHistory} />
             </div>
           </div>
-          <div className='flex h-[60%]'>
+          <div className='flex h-[40%] mt-4'>
             <div className='grid grid-cols-1 items-center h-full w-full'>
               {/* Sponsor Grid Section */}
               <SponsorGrid />
