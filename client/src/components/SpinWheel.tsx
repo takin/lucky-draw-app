@@ -223,76 +223,86 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
             Pengaturan Peserta
           </h2> */}
 
-        {/* Control Buttons */}
-        {isParticipantSet && (
-          <div className='flex flex-col justify-center gap-4 flex-1'>
-            <div className='flex flex-col items-center justify-center'>
-              <h2 className='text-6xl font-bold text-yellow-600'>{participantCount}</h2>
-              <h3 className='text-yellow-800 mb-4'>Total Peserta</h3>
+        <div className='flex flex-row gap-4 w-[50%]'>
+          {/* Control Buttons */}
+          {isParticipantSet && (
+            <div className='flex flex-col justify-center gap-4 flex-1'>
+              <div className='flex flex-col items-center justify-center mt-4'>
+                <h2 className='text-6xl font-bold text-yellow-600'>{participantCount}</h2>
+                <h3 className='text-yellow-800 mb-4'>Total Peserta</h3>
+              </div>
+
+              <Button
+                onClick={spinNumbers}
+                disabled={isSpinning}
+                data-testid='button-spin'
+                className='bg-gradient-to-r h-full from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl text-lg font-bold shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'
+              >
+                <Play className='w-5 h-5 mr-2' />
+                {isSpinning ? 'BERPUTAR...' : 'PUTAR NOMOR'}
+              </Button>
+
+              <div className='flex flex-row gap-4'>
+                <Button
+                  onClick={resetNumbers}
+                  disabled={isSpinning}
+                  data-testid='button-reset'
+                  variant='outline'
+                  size='sm'
+                  className='w-fit mx-auto'
+                >
+                  <RotateCcw className='w-4 h-4 mr-2' />
+                  Reset
+                </Button>
+
+                {/* Sound Toggle Button */}
+                <Button
+                  onClick={() => setIsSoundEnabled(!isSoundEnabled)}
+                  variant='outline'
+                  size='sm'
+                  className='w-fit mx-auto'
+                >
+                  {isSoundEnabled ? (
+                    <>
+                      <Volume2 className='w-4 h-4 mr-2' />
+                      Sound On
+                    </>
+                  ) : (
+                    <>
+                      <VolumeX className='w-4 h-4 mr-2' />
+                      Sound Off
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
-
-            {/* Sound Toggle Button */}
-            <Button
-              onClick={() => setIsSoundEnabled(!isSoundEnabled)}
-              variant='outline'
-              size='sm'
-              className='w-fit mx-auto'
-            >
-              {isSoundEnabled ? (
-                <>
-                  <Volume2 className='w-4 h-4 mr-2' />
-                  Sound On
-                </>
-              ) : (
-                <>
-                  <VolumeX className='w-4 h-4 mr-2' />
-                  Sound Off
-                </>
-              )}
-            </Button>
-            <Button
-              onClick={spinNumbers}
-              disabled={isSpinning}
-              data-testid='button-spin'
-              className='bg-gradient-to-r h-full from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl text-lg font-bold shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'
-            >
-              <Play className='w-5 h-5 mr-2' />
-              {isSpinning ? 'BERPUTAR...' : 'PUTAR NOMOR'}
-            </Button>
-
-            <Button
-              onClick={resetNumbers}
-              disabled={isSpinning}
-              data-testid='button-reset'
-              variant='outline'
-              className='px-4 py-3 rounded-xl font-semibold'
-            >
-              <RotateCcw className='w-4 h-4 mr-2' />
-              Reset
-            </Button>
-          </div>
-        )}
-        {!isParticipantSet && (
-          <div className='p-4 gap-4 flex flex-col'>
-            <label htmlFor='participants' className='text-gray-700 font-semibold'>
-              Jumlah Peserta:
-            </label>
-            <Input
-              id='participants'
-              data-testid='input-participants'
-              type='number'
-              min={0}
-              max={1000}
-              value={participantCount}
-              onChange={(e) => setParticipantCount(parseInt(e.target.value))}
-              className='w-32 text-center font-semibold'
-            />
-            <Button onClick={updateParticipants} data-testid='button-update' className='bg-blue-500 hover:bg-blue-600'>
-              <RotateCcw className='w-4 h-4 mr-2' />
-              Update
-            </Button>
-          </div>
-        )}
+          )}
+          {!isParticipantSet && (
+            <div className='p-4 gap-4 flex flex-col'>
+              <label htmlFor='participants' className='text-gray-700 font-semibold'>
+                Jumlah Peserta:
+              </label>
+              <Input
+                id='participants'
+                data-testid='input-participants'
+                type='number'
+                min={0}
+                max={1000}
+                value={participantCount}
+                onChange={(e) => setParticipantCount(parseInt(e.target.value))}
+                className='w-32 text-center font-semibold'
+              />
+              <Button
+                onClick={updateParticipants}
+                data-testid='button-update'
+                className='bg-blue-500 hover:bg-blue-600'
+              >
+                <RotateCcw className='w-4 h-4 mr-2' />
+                Update
+              </Button>
+            </div>
+          )}
+        </div>
 
         {/* Spinning Number Display */}
         <div className='flex flex-row gap-4 w-full'>
