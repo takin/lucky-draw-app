@@ -59,7 +59,7 @@ export default function Home() {
             </div>
           </div>
           <div className='flex h-[60%]'>
-            <div className='grid grid-cols-1 items-center h-full'>
+            <div className='grid grid-cols-1 items-center h-full w-full'>
               {/* Sponsor Grid Section */}
               <SponsorGrid />
             </div>
