@@ -19,7 +19,7 @@ export default function WinnersHistory({ winners, onClearHistory }: WinnersHisto
   };
 
   return (
-    <Card className='bg-white rounded-2xl shadow-xl h-[300px]'>
+    <Card className='bg-white rounded-2xl shadow-xl h-full'>
       <CardContent className='p-3 lg:p-4 h-full flex flex-col'>
         <div className='flex items-center justify-between mb-3'>
           <h2 className='text-lg font-bold text-gray-800'>
@@ -42,9 +42,11 @@ export default function WinnersHistory({ winners, onClearHistory }: WinnersHisto
 
         <div className='flex-1 flex items-start justify-center'>
           {winners.length === 0 ? (
-            <div className='text-center text-gray-500'>
-              <Trophy className='w-6 h-6 mx-auto mb-1 text-gray-300' />
-              <p className='text-xs'>Belum ada pemenang</p>
+            <div className='flex items-center justify-center h-full'>
+              <div className='text-center text-gray-500'>
+                <Trophy className='w-6 h-6 mx-auto mb-1 text-gray-300' />
+                <p className='text-xs'>Belum ada pemenang</p>
+              </div>
             </div>
           ) : (
             <div className='w-full pt-2'>

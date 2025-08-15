@@ -216,17 +216,12 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
   };
 
   return (
-    <Card className='bg-white rounded-2xl shadow-xl h-[300px]'>
+    <Card className='bg-white rounded-2xl shadow-xl h-full'>
       <CardContent className='p-3 lg:p-4 h-full flex items-center justify-items-center gap-4'>
-        {/* <h2 className='text-2xl font-bold text-gray-800 mb-4'>
-            <Users className='inline-block w-6 h-6 text-blue-500 mr-2' />
-            Pengaturan Peserta
-          </h2> */}
-
-        <div className='flex flex-row gap-4 w-[50%]'>
+        <div className='grid grid-flow-col grid-cols-2 gap-6 items-center justify-center w-full'>
           {/* Control Buttons */}
           {isParticipantSet && (
-            <div className='flex flex-col justify-center gap-4 flex-1'>
+            <div className='flex flex-col justify-center gap-4'>
               <div className='flex flex-col items-center justify-center mt-4'>
                 <h2 className='text-6xl font-bold text-yellow-600'>{participantCount}</h2>
                 <h3 className='text-yellow-800 mb-4'>Total Peserta</h3>
@@ -278,7 +273,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
             </div>
           )}
           {!isParticipantSet && (
-            <div className='p-4 gap-4 flex flex-col'>
+            <div className='p-4 gap-4 flex flex-col items-center justify-center'>
               <label htmlFor='participants' className='text-gray-700 font-semibold'>
                 Jumlah Peserta:
               </label>
@@ -302,54 +297,54 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
               </Button>
             </div>
           )}
-        </div>
+          {/* </div> */}
 
-        {/* Spinning Number Display */}
-        <div className='flex flex-row gap-4 w-full'>
-          <div className='relative flex justify-center items-center flex-1'>
-            <div className='relative bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-4 shadow-2xl'>
-              <div className='bg-black/20 rounded-2xl p-4 backdrop-blur-sm'>
-                <div className='text-center'>
-                  <div className='text-white/70 text-sm font-semibold mb-2'>NOMOR PESERTA</div>
-                  <div className='relative overflow-hidden h-24 flex items-center justify-center'>
-                    <motion.div
-                      className='text-8xl font-bold text-white font-mono tracking-wider'
-                      animate={
-                        isSpinning
-                          ? {
-                              y: [-50, 50],
-                              scale: [0.8, 1.2, 0.8],
-                            }
-                          : {}
-                      }
-                      transition={{
-                        duration: isSpinning ? 0.05 : 0,
-                        ease: 'easeInOut',
-                        repeat: isSpinning ? Infinity : 0,
-                        repeatType: 'reverse',
-                      }}
-                      key={currentNumber} // Force re-render when number changes
-                      data-testid='number-display'
-                    >
-                      {isSpinning
-                        ? currentNumber.toString().padStart(3, '0')
-                        : winner
-                        ? winner.toString().padStart(3, '0')
-                        : '000'}
-                    </motion.div>
-                  </div>
-                  <div className='text-white/50 text-xs mt-2'>1 - {participantCount}</div>
+          {/* Spinning Number Display */}
+          {/* <div className='flex flex-row gap-4 w-full'> */}
+          {/* <div className='relative flex justify-center items-center flex-1'> */}
+          <div className='relative bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-4 shadow-2xl'>
+            <div className='bg-black/20 rounded-2xl p-4 backdrop-blur-sm'>
+              <div className='text-center'>
+                <div className='text-white/70 text-sm font-semibold mb-2'>NOMOR PESERTA</div>
+                <div className='relative overflow-hidden h-24 flex items-center justify-center'>
+                  <motion.div
+                    className='text-8xl font-bold text-white font-mono tracking-wider'
+                    animate={
+                      isSpinning
+                        ? {
+                            y: [-50, 50],
+                            scale: [0.8, 1.2, 0.8],
+                          }
+                        : {}
+                    }
+                    transition={{
+                      duration: isSpinning ? 0.05 : 0,
+                      ease: 'easeInOut',
+                      repeat: isSpinning ? Infinity : 0,
+                      repeatType: 'reverse',
+                    }}
+                    key={currentNumber} // Force re-render when number changes
+                    data-testid='number-display'
+                  >
+                    {isSpinning
+                      ? currentNumber.toString().padStart(3, '0')
+                      : winner
+                      ? winner.toString().padStart(3, '0')
+                      : '000'}
+                  </motion.div>
                 </div>
+                <div className='text-white/50 text-xs mt-2'>1 - {participantCount}</div>
               </div>
-
-              {/* Decorative elements */}
-              <div className='absolute -top-2 -left-2 w-6 h-6 bg-yellow-400 rounded-full animate-pulse'></div>
-              <div className='absolute -top-2 -right-2 w-4 h-4 bg-orange-400 rounded-full animate-pulse delay-300'></div>
-              <div className='absolute -bottom-2 -left-2 w-4 h-4 bg-green-400 rounded-full animate-pulse delay-700'></div>
-              <div className='absolute -bottom-2 -right-2 w-6 h-6 bg-purple-400 rounded-full animate-pulse delay-500'></div>
             </div>
+
+            {/* Decorative elements */}
+            <div className='absolute -top-2 -left-2 w-6 h-6 bg-yellow-400 rounded-full animate-pulse'></div>
+            <div className='absolute -top-2 -right-2 w-4 h-4 bg-orange-400 rounded-full animate-pulse delay-300'></div>
+            <div className='absolute -bottom-2 -left-2 w-4 h-4 bg-green-400 rounded-full animate-pulse delay-700'></div>
+            <div className='absolute -bottom-2 -right-2 w-6 h-6 bg-purple-400 rounded-full animate-pulse delay-500'></div>
           </div>
         </div>
+        {/* </div> */}
 
         {/* Winner Popup Modal */}
         <AnimatePresence>
@@ -371,7 +366,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
                   duration: 0.8,
                   bounce: 0.4,
                 }}
-                className='bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-8 rounded-3xl shadow-2xl text-white text-center max-w-md mx-4 relative'
+                className='bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-8 rounded-3xl shadow-2xl text-white text-center max-w-lg mx-4 relative'
                 onClick={(e) => e.stopPropagation()}
                 data-testid='result-display'
               >

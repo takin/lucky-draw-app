@@ -33,7 +33,7 @@ export default function SponsorGrid() {
   ];
 
   return (
-    <Card className='bg-white rounded-2xl shadow-xl h-[480px]'>
+    <Card className='bg-white rounded-2xl shadow-xl h-full'>
       <CardContent className='p-3 lg:p-4 h-full flex flex-col'>
         <h2 className='text-xl font-bold text-center text-gray-800 mb-4'>
           <Handshake className='inline-block w-6 h-6 text-blue-500 mr-2' />
