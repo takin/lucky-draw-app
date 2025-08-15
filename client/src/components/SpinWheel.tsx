@@ -82,8 +82,8 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
         {isParticipantSet && (
           <div className='flex flex-col justify-center gap-4 flex-1'>
             <div className='flex flex-col items-center justify-center'>
-              <h2 className='text-2xl font-bold text-yellow-600'>{participantCount}</h2>
-              <h3 className='text-yellow-800 mb-4'>Jumlah Peserta</h3>
+              <h2 className='text-6xl font-bold text-yellow-600'>{participantCount}</h2>
+              <h3 className='text-yellow-800 mb-4'>Total Peserta</h3>
             </div>
             <Button
               onClick={spinNumbers}

@@ -40,16 +40,16 @@ export default function WinnersHistory({ winners, onClearHistory }: WinnersHisto
           )}
         </div>
 
-        <div className='flex-1 flex items-center justify-center'>
+        <div className='flex-1 flex items-start justify-center'>
           {winners.length === 0 ? (
             <div className='text-center text-gray-500'>
               <Trophy className='w-6 h-6 mx-auto mb-1 text-gray-300' />
               <p className='text-xs'>Belum ada pemenang</p>
             </div>
           ) : (
-            <div className='w-full'>
+            <div className='w-full pt-2'>
               <div
-                className='grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2'
+                className='grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2'
                 data-testid='winners-list'
               >
                 <AnimatePresence>

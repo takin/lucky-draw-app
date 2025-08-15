@@ -28,6 +28,8 @@ export default function SponsorGrid() {
     { id: 16, name: 'Mekar Frozen Foods', logo: '/sponsors/16-mekar-frozen-foods.png' },
     { id: 17, name: 'Nuuraura', logo: '/sponsors/17-nuuraura.png' },
     { id: 18, name: 'Wonder Shoes', logo: '/sponsors/18-wondershoes.jpeg' },
+    { id: 19, name: 'Nuimage Creative', logo: '/sponsors/19-nuimage-creative.png' },
+    { id: 20, name: 'Warmindo 88', logo: '/sponsors/20-warmindo-88.png' },
   ];
 
   return (
