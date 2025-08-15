@@ -15,11 +15,12 @@ interface SpinWheelProps {
 }
 
 export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
-  const [participantCount, setParticipantCount] = useState(0);
+  const [participantStartNumber, setParticipantStartNumber] = useState(0);
+  const [participantEndNumber, setParticipantEndNumber] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [winners, setWinners] = useState<WinnerRecord[]>([]);
   const [currentWinners, setCurrentWinners] = useState<number[]>([]);
-  const [currentNumber, setCurrentNumber] = useState<number>(1);
+  const [currentNumber, setCurrentNumber] = useState<number>(0);
   const [isParticipantSet, setIsParticipantSet] = useState(false);
   const [isSoundEnabled, setIsSoundEnabled] = useState(true);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
@@ -147,9 +148,9 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
   }, []);
 
   const updateParticipants = () => {
-    if (participantCount >= 2 && participantCount <= 1000) {
+    if (participantStartNumber > 0 && participantEndNumber > participantStartNumber) {
       setCurrentWinners([]);
-      setCurrentNumber(1);
+      setCurrentNumber(0);
       setIsParticipantSet(true);
     }
   };
@@ -176,7 +177,8 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
     let counter = 0;
     const interval = setInterval(() => {
       counter++;
-      const randomNum = Math.floor(Math.random() * participantCount) + 1;
+      const randomNum =
+        Math.floor(Math.random() * (participantEndNumber - participantStartNumber)) + participantStartNumber;
       setCurrentNumber(randomNum);
     }, 50); // Faster animation - every 50ms
 
@@ -186,7 +188,10 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
 
       // Generate 10 unique winners
       const newWinners: number[] = [];
-      const availableNumbers = Array.from({ length: participantCount }, (_, i) => i + 1);
+      const availableNumbers = Array.from(
+        { length: participantEndNumber - participantStartNumber },
+        (_, i) => i + participantStartNumber
+      );
 
       // Shuffle the available numbers
       for (let i = availableNumbers.length - 1; i > 0; i--) {
@@ -195,7 +200,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
       }
 
       // Take the first 10 (or all if less than 10 participants)
-      const winnerCount = Math.min(10, participantCount);
+      const winnerCount = Math.min(10, participantEndNumber - participantStartNumber);
       for (let i = 0; i < winnerCount; i++) {
         newWinners.push(availableNumbers[i]);
       }
@@ -248,7 +253,7 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
           {isParticipantSet && (
             <div className='flex flex-col justify-center gap-4'>
               <div className='flex flex-col items-center justify-center mt-4'>
-                <h2 className='text-6xl font-bold text-yellow-600'>{participantCount}</h2>
+                <h2 className='text-6xl font-bold text-yellow-600'>{participantEndNumber - participantStartNumber}</h2>
                 <h3 className='text-yellow-800 mb-4'>Total Peserta</h3>
               </div>
 
@@ -299,19 +304,28 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
           )}
           {!isParticipantSet && (
             <div className='p-4 gap-4 flex flex-col items-center justify-center'>
-              <label htmlFor='participants' className='text-gray-700 font-semibold'>
-                Jumlah Peserta:
-              </label>
-              <Input
-                id='participants'
-                data-testid='input-participants'
-                type='number'
-                min={0}
-                max={1000}
-                value={participantCount}
-                onChange={(e) => setParticipantCount(parseInt(e.target.value))}
-                className='w-32 text-center font-semibold'
-              />
+              <div className='flex flex-row gap-4'>
+                <Input
+                  id='participants-start'
+                  data-testid='input-participants-start'
+                  type='number'
+                  min={0}
+                  max={1000}
+                  value={participantStartNumber}
+                  onChange={(e) => setParticipantStartNumber(parseInt(e.target.value))}
+                  className='w-32 text-center font-semibold'
+                />
+                <Input
+                  id='participants-end'
+                  data-testid='input-participants-end'
+                  type='number'
+                  min={0}
+                  max={1000}
+                  value={participantEndNumber}
+                  onChange={(e) => setParticipantEndNumber(parseInt(e.target.value))}
+                  className='w-32 text-center font-semibold'
+                />
+              </div>
               <Button
                 onClick={updateParticipants}
                 data-testid='button-update'
@@ -358,7 +372,9 @@ export default function SpinWheel({ onWinnerChange }: SpinWheelProps) {
                       : '00000'}
                   </motion.div>
                 </div>
-                <div className='text-white/50 text-xs mt-2'>1 - {participantCount}</div>
+                <div className='text-white/50 text-xs mt-2'>
+                  {participantStartNumber} - {participantEndNumber}
+                </div>
               </div>
             </div>
 
