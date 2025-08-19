@@ -1,26 +1,21 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { createSpinningSound, createWinnerSound } from '@/lib/audio'
+import { useAppContext } from '@/contexts/app-context'
 
 type SpinWheelContextType = {
   isSpinning: boolean
   showWinnerModal: boolean
-  isParticipantSet: boolean
-  isNonWinnerParticipantExist: boolean
   winners: Array<WinnerRecord>
   currentNumber: number
   currentWinners: Array<number>
   resetSpinWheel: () => void
-  setIsSpinning: (isSpinning: boolean) => void
-  setShowWinnerModal: (showWinnerModal: boolean) => void
-  setIsParticipantSet: (isParticipantSet: boolean) => void
-  setIsNonWinnerParticipantExist: (isNonWinnerParticipantExist: boolean) => void
-  setWinners: (winners: Array<WinnerRecord>) => void
-  setCurrentNumber: (currentNumber: number) => void
-  setCurrentWinners: (currentWinners: Array<number>) => void
   closeWinnerModal: () => void
-  spinNumbers: (startNumber: number, numOfParticipants: number) => void
-  setIsSoundEnabled: (isSoundEnabled: boolean) => void
-  isSoundEnabled: boolean
+  spinNumbers: (
+    startNumber: number,
+    numOfParticipants: number,
+    maxWinners: number,
+    winnerPerSpin: number,
+  ) => void
 }
 
 type WinnerRecord = {
@@ -31,23 +26,12 @@ type WinnerRecord = {
 export const SpinWheelContext = createContext<SpinWheelContextType>({
   isSpinning: false,
   showWinnerModal: false,
-  isParticipantSet: false,
-  isNonWinnerParticipantExist: false,
   winners: [],
   currentNumber: 0,
   currentWinners: [],
   resetSpinWheel: () => {},
-  setIsSpinning: () => {},
-  setShowWinnerModal: () => {},
-  setIsParticipantSet: () => {},
-  setIsNonWinnerParticipantExist: () => {},
-  setWinners: () => {},
-  setCurrentNumber: () => {},
-  setCurrentWinners: () => {},
   closeWinnerModal: () => {},
   spinNumbers: () => {},
-  setIsSoundEnabled: () => {},
-  isSoundEnabled: false,
 })
 
 export const useSpinWheelContext = () => {
@@ -62,15 +46,12 @@ export const SpinWheelContextProvider = ({
 }) => {
   const [isSpinning, setIsSpinning] = useState(false)
   const [showWinnerModal, setShowWinnerModal] = useState(false)
-  const [isParticipantSet, setIsParticipantSet] = useState(false)
-  const [isNonWinnerParticipantExist, setIsNonWinnerParticipantExist] =
-    useState(false)
   const [winners, setWinners] = useState<Array<WinnerRecord>>([])
   const [currentNumber, setCurrentNumber] = useState(0)
   const [currentWinners, setCurrentWinners] = useState<Array<number>>([])
   const spinningAudioRef = useRef<(() => () => void) | null>(null)
   const winnerAudioRef = useRef<(() => AudioContext) | null>(null)
-  const [isSoundEnabled, setIsSoundEnabled] = useState(false)
+  const { settings } = useAppContext()
 
   const resetSpinWheel = () => {
     if (isSpinning) return
@@ -78,16 +59,41 @@ export const SpinWheelContextProvider = ({
     setCurrentWinners([])
     setCurrentNumber(0)
     setShowWinnerModal(false)
-    setIsParticipantSet(false)
-    setIsNonWinnerParticipantExist(false)
-    setWinners([])
+    clearWinners()
   }
 
   const closeWinnerModal = () => {
+    console.log('closeWinnerModal')
     setShowWinnerModal(false)
   }
 
-  const spinNumbers = (startNumber: number, numOfParticipants: number) => {
+  const saveWinners = (newWinners: Array<WinnerRecord>) => {
+    const existingWinners = localStorage.getItem('winners')
+    if (existingWinners) {
+      const parsedWinners = JSON.parse(existingWinners) as Array<WinnerRecord>
+      localStorage.setItem(
+        'winners',
+        JSON.stringify([...parsedWinners, ...newWinners]),
+      )
+    } else {
+      localStorage.setItem('winners', JSON.stringify(newWinners))
+    }
+
+    setWinners([...winners, ...newWinners])
+  }
+
+  const clearWinners = () => {
+    localStorage.removeItem('winners')
+    // remove the winners from the state
+    setWinners([])
+  }
+
+  const spinNumbers = (
+    startNumber: number,
+    numOfParticipants: number,
+    maxWinners: number,
+    winnerPerSpin: number,
+  ) => {
     if (isSpinning) return
 
     setIsSpinning(true)
@@ -96,7 +102,7 @@ export const SpinWheelContextProvider = ({
     setShowWinnerModal(false)
 
     // Start spinning sound
-    if (spinningAudioRef.current && isSoundEnabled) {
+    if (spinningAudioRef.current && settings.isSoundEnabled) {
       const stopSpinningSound = spinningAudioRef.current()
 
       // Stop the spinning sound after 4 seconds
@@ -119,7 +125,7 @@ export const SpinWheelContextProvider = ({
     setTimeout(() => {
       clearInterval(interval)
 
-      // Generate 10 unique winners
+      // Generate unique winners based on the numOfWinners and winnerPerSpin
       const newWinners: Array<number> = []
       let availableNumbers = Array.from(
         { length: numOfParticipants },
@@ -140,8 +146,12 @@ export const SpinWheelContextProvider = ({
         ]
       }
 
-      // Take the first 10 (or all if less than 10 participants)
-      const winnerCount = Math.min(availableNumbers.length, 10)
+      // Take the first numOfWinners (or all if less than numOfWinners participants)
+      const winnerCount = Math.min(
+        availableNumbers.length,
+        maxWinners,
+        winnerPerSpin,
+      )
       for (let i = 0; i < winnerCount; i++) {
         newWinners.push(availableNumbers[i])
       }
@@ -153,7 +163,7 @@ export const SpinWheelContextProvider = ({
       setCurrentNumber(newWinners[0]) // Show first winner in the display
 
       // Play winner sound
-      if (winnerAudioRef.current && isSoundEnabled) {
+      if (winnerAudioRef.current && settings.isSoundEnabled) {
         winnerAudioRef.current()
       }
 
@@ -163,7 +173,7 @@ export const SpinWheelContextProvider = ({
         number,
         timestamp,
       }))
-      setWinners([...winners, ...newWinnerRecords])
+      saveWinners(newWinnerRecords)
 
       setIsSpinning(false)
       setShowWinnerModal(true)
@@ -173,6 +183,12 @@ export const SpinWheelContextProvider = ({
   useEffect(() => {
     spinningAudioRef.current = createSpinningSound
     winnerAudioRef.current = createWinnerSound
+
+    const existingWinners = localStorage.getItem('winners')
+    if (existingWinners) {
+      const parsedWinners = JSON.parse(existingWinners) as Array<WinnerRecord>
+      setWinners(parsedWinners)
+    }
 
     // Cleanup function
     return () => {
@@ -186,23 +202,12 @@ export const SpinWheelContextProvider = ({
       value={{
         isSpinning,
         showWinnerModal,
-        isParticipantSet,
-        isNonWinnerParticipantExist,
         winners,
         currentNumber,
         currentWinners,
         resetSpinWheel,
-        setIsSpinning,
-        setShowWinnerModal,
-        setIsParticipantSet,
-        setIsNonWinnerParticipantExist,
-        setWinners,
-        setCurrentNumber,
-        setCurrentWinners,
         closeWinnerModal,
         spinNumbers,
-        setIsSoundEnabled,
-        isSoundEnabled,
       }}
     >
       {children}

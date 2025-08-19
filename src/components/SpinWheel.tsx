@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { Play, RotateCcw, Trophy } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
+import Modal, { defaultAnimation } from '@/components/Modal'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useAppContext } from '@/contexts/app-context'
@@ -10,7 +12,6 @@ export default function SpinWheel() {
   const {
     isSpinning,
     showWinnerModal,
-    isNonWinnerParticipantExist,
     winners,
     currentNumber,
     currentWinners,
@@ -18,6 +19,16 @@ export default function SpinWheel() {
     spinNumbers,
     closeWinnerModal,
   } = useSpinWheelContext()
+
+  const [showResetModal, setShowResetModal] = useState(false)
+  const handleShowResetModal = () => {
+    setShowResetModal(true)
+  }
+
+  const handleReset = () => {
+    resetSpinWheel()
+    setShowResetModal(false)
+  }
 
   return (
     <Card className="bg-white rounded-2xl shadow-xl h-full">
@@ -34,7 +45,12 @@ export default function SpinWheel() {
 
             <Button
               onClick={() =>
-                spinNumbers(settings.startNumber, settings.numOfParticipants)
+                spinNumbers(
+                  settings.startNumber,
+                  settings.numOfParticipants,
+                  settings.maxWinners,
+                  settings.winnerPerSpin,
+                )
               }
               disabled={
                 isSpinning || winners.length === settings.numOfParticipants
@@ -48,8 +64,8 @@ export default function SpinWheel() {
 
             <div className="flex flex-row gap-4">
               <Button
-                onClick={resetSpinWheel}
-                disabled={isSpinning}
+                onClick={handleShowResetModal}
+                disabled={isSpinning || winners.length === 0}
                 data-testid="button-reset"
                 variant="outline"
                 size="sm"
@@ -113,93 +129,89 @@ export default function SpinWheel() {
           </div>
         </div>
 
+        <AnimatePresence>
+          {showResetModal && (
+            <Modal
+              onClose={() => setShowResetModal(false)}
+              showCloseButton={false}
+              animation={defaultAnimation.ZOOM}
+              size={{
+                width: '300px',
+                height: '400px',
+              }}
+            >
+              <>
+                <h2 className="text-2xl font-bold">
+                  Apakah Anda yakin ingin mereset spin wheel?
+                </h2>
+                <p className="text-sm text-gray-100">
+                  Semua data akan dihapus dan akan direset ke awal.
+                </p>
+                <div className="relative z-99 flex flex-row gap-4 justify-center mt-6">
+                  <Button
+                    onClick={() => setShowResetModal(false)}
+                    className="w-fit bg-blue-500"
+                  >
+                    Batal
+                  </Button>
+                  <Button
+                    onClick={handleReset}
+                    variant="destructive"
+                    className="w-fit bg-red-500"
+                  >
+                    Reset
+                  </Button>
+                </div>
+              </>
+            </Modal>
+          )}
+        </AnimatePresence>
+
         {/* Winner Popup Modal */}
         <AnimatePresence>
-          {showWinnerModal && currentWinners.length > 0 && !isSpinning && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-              data-testid="winner-modal"
-              onClick={closeWinnerModal}
-            >
-              <motion.div
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                exit={{ scale: 0, rotate: 180 }}
-                transition={{
-                  type: 'spring',
-                  duration: 0.8,
-                  bounce: 0.4,
-                }}
-                className="bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-8 rounded-3xl shadow-2xl text-white text-center w-[80%] max-w-4xl h-[80%] mx-4 relative overflow-y-auto"
-                onClick={(e) => e.stopPropagation()}
-                data-testid="result-display"
-              >
-                {/* Confetti Effect */}
-                <div className="absolute inset-0 overflow-hidden rounded-3xl">
-                  <div className="absolute -top-2 -left-2 w-4 h-4 bg-white rounded-full animate-bounce"></div>
-                  <div className="absolute -top-1 right-4 w-3 h-3 bg-yellow-200 rounded-full animate-bounce delay-200"></div>
-                  <div className="absolute top-3 -right-2 w-5 h-5 bg-orange-200 rounded-full animate-bounce delay-500"></div>
-                  <div className="absolute -bottom-2 left-4 w-4 h-4 bg-red-200 rounded-full animate-bounce delay-300"></div>
-                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-white rounded-full animate-bounce delay-700"></div>
+          {showWinnerModal && (
+            <Modal onClose={closeWinnerModal}>
+              <div className="relative z-10 h-full flex flex-col items-center justify-center">
+                <h3 className="text-4xl font-bold mb-6 drop-shadow-lg">
+                  <Trophy className="inline-block w-10 h-10 mr-3" />
+                  PEMENANG!
+                </h3>
+                <p className="text-xl mb-6 drop-shadow-md">
+                  🎉 Selamat kepada {currentWinners.length} pemenang! 🎉
+                </p>
+
+                {/* Winners Grid */}
+                <div className="flex flex-row flex-wrap gap-4 items-center justify-center">
+                  {/* Of there is no winner, then display a message */}
+                  {currentWinners.length === 0 && (
+                    <div className="text-xl mb-6 drop-shadow-md">
+                      <p>Belum ada pemenang yang ditentukan</p>
+                    </div>
+                  )}
+
+                  {/* If there is a winner, then display the winners */}
+                  {currentWinners.length > 0 &&
+                    currentWinners.map((winner, index) => (
+                      <motion.div
+                        key={winner}
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 border border-white/30"
+                      >
+                        <div className="text-3xl font-bold mb-2 drop-shadow-xl">
+                          {winner
+                            .toString()
+                            .padStart(settings.paddedNumber || 1, '0')}
+                        </div>
+                        <div className="text-sm opacity-80">
+                          Pemenang #{index + 1}
+                        </div>
+                      </motion.div>
+                    ))}
                 </div>
-
-                <div className="relative z-10 h-full flex flex-col items-center justify-center">
-                  <h3 className="text-4xl font-bold mb-6 drop-shadow-lg">
-                    <Trophy className="inline-block w-10 h-10 mr-3" />
-                    PEMENANG!
-                  </h3>
-                  <p className="text-xl mb-6 drop-shadow-md">
-                    🎉 Selamat kepada {currentWinners.length} pemenang! 🎉
-                  </p>
-
-                  {/* Winners Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8 w-full max-w-4xl">
-                    {/* Of there is no winner, then display a message */}
-                    {currentWinners.length === 0 && (
-                      <div className="text-xl mb-6 drop-shadow-md">
-                        <p>
-                          {isNonWinnerParticipantExist
-                            ? 'Jumlah partisipan sudah habis'
-                            : 'Belum ada pemenang yang ditentukan'}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* If there is a winner, then display the winners */}
-                    {currentWinners.length > 0 &&
-                      currentWinners.map((winner, index) => (
-                        <motion.div
-                          key={winner}
-                          initial={{ scale: 0, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ delay: index * 0.1 }}
-                          className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 border border-white/30"
-                        >
-                          <div className="text-3xl font-bold mb-2 drop-shadow-xl">
-                            {winner.toString().padStart(5, '0')}
-                          </div>
-                          <div className="text-sm opacity-80">
-                            Pemenang #{index + 1}
-                          </div>
-                        </motion.div>
-                      ))}
-                  </div>
-
-                  <div className="flex flex-row gap-4 mt-6">
-                    <button
-                      onClick={closeWinnerModal}
-                      className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 border border-white/30"
-                      data-testid="button-close-modal"
-                    >
-                      Tutup
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
+              </div>
+            </Modal>
           )}
         </AnimatePresence>
       </CardContent>
