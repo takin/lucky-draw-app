@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { Cog } from 'lucide-react'
+import { Cog, Save, X } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
@@ -14,6 +14,8 @@ import {
   FormMessage,
 } from './ui/form'
 import { Input } from './ui/input'
+import { useAppContext } from '@/contexts/app-context'
+import { Switch } from '@/components/ui/switch'
 
 const formSchema = z.object({
   title: z.string().min(1),
@@ -23,6 +25,7 @@ const formSchema = z.object({
   startNumber: z.number(),
   numOfParticipants: z.number(),
   paddedNumber: z.number(),
+  isSoundEnabled: z.boolean(),
 })
 
 export default function Header() {
@@ -31,18 +34,20 @@ export default function Header() {
     x: 0,
     y: 0,
   })
-  const settings = JSON.parse(localStorage.getItem('settings') || '{}')
+  const { settings, setSettings } = useAppContext()
+  console.log(settings)
 
   const settingsForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: settings?.title || 'FUNWALK',
-      subtitle: settings?.subtitle || 'CLUSTER MONTERREY CITRALAND CIBUBUR',
-      winnerPerSpin: settings?.winnerPerSpin || 10,
-      maxWinners: settings?.maxWinners || 10,
-      startNumber: settings?.startNumber || 0,
-      numOfParticipants: settings?.numOfParticipants || 1,
-      paddedNumber: settings?.paddedNumber || 10,
+      title: settings.title,
+      subtitle: settings.subtitle,
+      winnerPerSpin: settings.winnerPerSpin,
+      maxWinners: settings.maxWinners,
+      startNumber: settings.startNumber,
+      numOfParticipants: settings.numOfParticipants,
+      paddedNumber: settings.paddedNumber,
+      isSoundEnabled: settings.isSoundEnabled,
     },
   })
 
@@ -64,8 +69,7 @@ export default function Header() {
   }
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    localStorage.setItem('settings', JSON.stringify(values))
-    console.log(values)
+    setSettings(values)
     setShowSettingsModal(false)
   }
 
@@ -74,10 +78,10 @@ export default function Header() {
       <header className="p-2 flex bg-white text-black justify-around items-center">
         <div className="flex flex-1 flex-col items-center">
           <h1 className="text-4xl font-bold bg-gradient-to-br from-blue-800 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            {settings?.title || 'FUNWALK'}
+            {settings.title}
           </h1>
           <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-700 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
-            {settings?.subtitle || 'CLUSTER MONTERREY CITRALAND CIBUBUR'}
+            {settings.subtitle}
           </h2>
         </div>
         <div className="flex flex-col items-center">
@@ -224,7 +228,7 @@ export default function Header() {
                           )}
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-3 gap-4">
                         <FormField
                           control={settingsForm.control}
                           name="winnerPerSpin"
@@ -267,12 +271,40 @@ export default function Header() {
                             </FormItem>
                           )}
                         />
+                        <FormField
+                          control={settingsForm.control}
+                          name="isSoundEnabled"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-black">
+                                Sound Enabled
+                              </FormLabel>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
                       </div>
+                    </div>
+                    <div className="flex justify-center gap-4 mt-10">
                       <Button
                         type="submit"
-                        className="mt-4 bg-gradient-to-br h-12 from-emerald-400 to-emerald-600 text-white"
+                        className="bg-emerald-700 text-white hover:bg-emerald-500"
                       >
+                        <Save />
                         Save
+                      </Button>
+                      <Button
+                        type="button"
+                        className="bg-red-700 text-white hover:bg-red-500"
+                        onClick={closeSettingsModal}
+                      >
+                        <X />
+                        Close
                       </Button>
                     </div>
                   </form>

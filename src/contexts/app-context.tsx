@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 
 export interface Settings {
   title: string
@@ -8,73 +8,50 @@ export interface Settings {
   startNumber: number
   numOfParticipants: number
   paddedNumber: number
+  isSoundEnabled: boolean
 }
 
-export interface WinnerRecord {
-  number: number
-  timestamp: Date
+const defaultSettings: Settings = {
+  title: 'SPIN WHEEL',
+  subtitle: 'DEVELOPED BY AFAN & ARFAN',
+  winnerPerSpin: 1,
+  maxWinners: 1,
+  startNumber: 1,
+  numOfParticipants: 1,
+  paddedNumber: 1,
+  isSoundEnabled: false,
 }
 
 export const AppContext = createContext<{
   settings: Settings
   setSettings: (settings: Settings) => void
-  winners: Array<WinnerRecord>
-  setWinners: (winners: Array<WinnerRecord>) => void
-  clearWinners: () => void
-  isSpinning: boolean
-  setIsSpinning: (isSpinning: boolean) => void
-  currentNumber: number
-  setCurrentNumber: (currentNumber: number) => void
-  currentWinners: Array<number>
-  setCurrentWinners: (currentWinners: Array<number>) => void
-  isParticipantSet: boolean
-  setIsParticipantSet: (isParticipantSet: boolean) => void
-  isSoundEnabled: boolean
-  setIsSoundEnabled: (isSoundEnabled: boolean) => void
-  showWinnerModal: boolean
-  setShowWinnerModal: (showWinnerModal: boolean) => void
-  isNonWinnerParticipantExist: boolean
-  setIsNonWinnerParticipantExist: (isNonWinnerParticipantExist: boolean) => void
-  audioRefs: {
-    spinSound: HTMLAudioElement | null
-    winnerSound: HTMLAudioElement | null
-    nonWinnerSound: HTMLAudioElement | null
-  }
 }>({
-  settings: {
-    title: 'FUNWALK',
-    subtitle: 'CLUSTER MONTERREY CITRALAND CIBUBUR',
-    winnerPerSpin: 10,
-    maxWinners: 10,
-    startNumber: 0,
-    numOfParticipants: 1,
-    paddedNumber: 10,
-  },
+  settings: defaultSettings,
   setSettings: () => {},
-  winners: [],
-  setWinners: () => {},
-  clearWinners: () => {},
-  isSpinning: false,
-  setIsSpinning: () => {},
-  currentNumber: 0,
-  setCurrentNumber: () => {},
-  currentWinners: [],
-  setCurrentWinners: () => {},
-  isParticipantSet: false,
-  setIsParticipantSet: () => {},
-  isSoundEnabled: true,
-  setIsSoundEnabled: () => {},
-  showWinnerModal: false,
-  setShowWinnerModal: () => {},
-  isNonWinnerParticipantExist: false,
-  setIsNonWinnerParticipantExist: () => {},
-  audioRefs: {
-    spinSound: null,
-    winnerSound: null,
-    nonWinnerSound: null,
-  },
 })
 
 export const useAppContext = () => {
-  return useContext(AppContext)
+  const context = useContext(AppContext)
+  return context
+}
+
+export const AppContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => {
+  const localSettings = localStorage.getItem('settings')
+  const [settings, setSettings] = useState<Settings>(
+    localSettings ? JSON.parse(localSettings) : defaultSettings,
+  )
+
+  useEffect(() => {
+    localStorage.setItem('settings', JSON.stringify(settings))
+  }, [settings])
+
+  return (
+    <AppContext.Provider value={{ settings, setSettings }}>
+      {children}
+    </AppContext.Provider>
+  )
 }
