@@ -5,28 +5,33 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { createSpinningSound, createWinnerSound } from '@/lib/audio'
+import { useAppContext } from '@/contexts/app-context'
 
-export interface WinnerRecord {
-  number: number
-  timestamp: Date
-}
+export default function SpinWheel() {
+  const {
+    settings,
+    winners,
+    setWinners,
+    isSpinning,
+    setIsSpinning,
+    currentNumber,
+    setCurrentNumber,
+    currentWinners,
+    setCurrentWinners,
+    isParticipantSet,
+    setIsParticipantSet,
+    isSoundEnabled,
+    setIsSoundEnabled,
+    showWinnerModal,
+    setShowWinnerModal,
+    isNonWinnerParticipantExist,
+    setIsNonWinnerParticipantExist,
+  } = useAppContext()
 
-interface SpinWheelProps {
-  onWinnerChange?: (winners: Array<WinnerRecord>) => void
-  winners: Array<WinnerRecord>
-}
-
-export default function SpinWheel({ onWinnerChange, winners }: SpinWheelProps) {
-  const [startNumber, setStartNumber] = useState(0)
-  const [participantCount, setParticipantCount] = useState(1)
-  const [isSpinning, setIsSpinning] = useState(false)
-  const [currentWinners, setCurrentWinners] = useState<Array<number>>([])
-  const [currentNumber, setCurrentNumber] = useState<number>(0)
-  const [isParticipantSet, setIsParticipantSet] = useState(false)
-  const [isSoundEnabled, setIsSoundEnabled] = useState(true)
-  const [showWinnerModal, setShowWinnerModal] = useState(false)
-  const [isNonWinnerParticipantExist, setIsNonWinnerParticipantExist] =
-    useState(false)
+  const [startNumber, setStartNumber] = useState(settings.startNumber || 0)
+  const [numOfParticipants, setNumOfParticipants] = useState(
+    settings.numOfParticipants || 1,
+  )
 
   // Audio refs
   const spinningAudioRef = useRef<(() => () => void) | null>(null)
@@ -43,12 +48,8 @@ export default function SpinWheel({ onWinnerChange, winners }: SpinWheelProps) {
     }
   }, [])
 
-  useEffect(() => {
-    console.log('winners', winners)
-  }, [winners])
-
   const updateParticipants = () => {
-    if (startNumber > 0 && participantCount > 0) {
+    if (startNumber > 0 && numOfParticipants > 0) {
       setCurrentWinners([])
       setCurrentNumber(0)
       setIsParticipantSet(true)
@@ -79,7 +80,7 @@ export default function SpinWheel({ onWinnerChange, winners }: SpinWheelProps) {
     const interval = setInterval(() => {
       counter++
       const randomNum =
-        Math.floor(Math.random() * (participantCount - startNumber)) +
+        Math.floor(Math.random() * (numOfParticipants - startNumber)) +
         startNumber
       setCurrentNumber(randomNum)
     }, 50) // Faster animation - every 50ms
@@ -91,7 +92,7 @@ export default function SpinWheel({ onWinnerChange, winners }: SpinWheelProps) {
       // Generate 10 unique winners
       const newWinners: Array<number> = []
       let availableNumbers = Array.from(
-        { length: participantCount },
+        { length: numOfParticipants },
         (_, i) => startNumber + i,
       )
 
@@ -133,7 +134,7 @@ export default function SpinWheel({ onWinnerChange, winners }: SpinWheelProps) {
         timestamp,
       }))
       const updatedWinners = [...winners, ...newWinnerRecords]
-      onWinnerChange?.(updatedWinners)
+      setWinners(updatedWinners)
 
       setIsSpinning(false)
       setShowWinnerModal(true)
@@ -148,12 +149,8 @@ export default function SpinWheel({ onWinnerChange, winners }: SpinWheelProps) {
     setShowWinnerModal(false)
     setIsParticipantSet(false)
     setIsNonWinnerParticipantExist(false)
-    onWinnerChange?.([])
+    setWinners([])
   }
-
-  // const clearWinners = () => {
-  //   setWinners([]);
-  // };
 
   const closeWinnerModal = () => {
     setShowWinnerModal(false)
@@ -168,14 +165,14 @@ export default function SpinWheel({ onWinnerChange, winners }: SpinWheelProps) {
             <div className="flex flex-col justify-center gap-4">
               <div className="flex flex-col items-center justify-center mt-4">
                 <h2 className="text-6xl font-bold text-yellow-600">
-                  {participantCount}
+                  {numOfParticipants}
                 </h2>
                 <h3 className="text-yellow-800 mb-4">Total Peserta</h3>
               </div>
 
               <Button
                 onClick={spinNumbers}
-                disabled={isSpinning || winners.length === participantCount}
+                disabled={isSpinning || winners.length === numOfParticipants}
                 data-testid="button-spin"
                 className="bg-gradient-to-r h-full from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl text-lg font-bold shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
@@ -240,10 +237,10 @@ export default function SpinWheel({ onWinnerChange, winners }: SpinWheelProps) {
                   type="number"
                   min={0}
                   max={1000}
-                  value={participantCount}
+                  value={numOfParticipants}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     !isNaN(parseInt(e.target.value)) &&
-                    setParticipantCount(parseInt(e.target.value))
+                    setNumOfParticipants(parseInt(e.target.value))
                   }
                   className="w-32 text-center font-semibold"
                 />
@@ -290,14 +287,18 @@ export default function SpinWheel({ onWinnerChange, winners }: SpinWheelProps) {
                     data-testid="number-display"
                   >
                     {isSpinning
-                      ? currentNumber.toString().padStart(5, '0')
+                      ? currentNumber
+                          .toString()
+                          .padStart(settings.paddedNumber || 1, '0')
                       : currentWinners.length > 0
-                        ? currentWinners[0].toString().padStart(5, '0')
-                        : '00000'}
+                        ? currentWinners[0]
+                            .toString()
+                            .padStart(settings.paddedNumber || 1, '0')
+                        : '0'.repeat(settings.paddedNumber || 1)}
                   </motion.div>
                 </div>
                 <div className="text-white/50 text-xs mt-2">
-                  {participantCount}
+                  {numOfParticipants}
                 </div>
               </div>
             </div>
