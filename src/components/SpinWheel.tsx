@@ -169,7 +169,7 @@ export default function SpinWheel() {
         {/* Winner Popup Modal */}
         <AnimatePresence>
           {showWinnerModal && (
-            <Modal onClose={closeWinnerModal}>
+            <Modal onClose={closeWinnerModal} animation={defaultAnimation.ZOOM}>
               <div className="relative z-10 h-full flex flex-col items-center justify-center">
                 <h3 className="text-4xl font-bold mb-6 drop-shadow-lg">
                   <Trophy className="inline-block w-10 h-10 mr-3" />

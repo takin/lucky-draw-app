@@ -19,7 +19,6 @@ export default function WinnersHistory() {
     previousPage,
     isSearching,
     paging,
-    navDirection,
   } = useWinnerHistoryContext()
 
   return (
@@ -99,7 +98,6 @@ export default function WinnersHistory() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{
                   opacity: 0,
-                  x: navDirection === 'forward' ? 50 : -50,
                 }}
                 transition={{ duration: 0.3 }}
                 className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 w-full"

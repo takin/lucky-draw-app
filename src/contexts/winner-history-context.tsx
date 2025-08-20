@@ -14,14 +14,11 @@ export const WinnerHistoryContext = createContext({
   isSearching: false,
   nextPage: () => {},
   previousPage: () => {},
-  navDirection: 'forward',
 })
 
 export const useWinnerHistoryContext = () => {
   return useContext(WinnerHistoryContext)
 }
-
-type NavDirection = 'forward' | 'backward'
 
 export const WinnerHistoryContextProvider = ({
   children,
@@ -34,7 +31,6 @@ export const WinnerHistoryContextProvider = ({
   const [currentPage, setCurrentPage] = useState<number>(0)
   const [isSearching, setIsSearching] = useState<boolean>(false)
   const [paging, setPaging] = useState<Array<Array<WinnerRecord>>>([])
-  const [navDirection, setNavDirection] = useState<NavDirection>('backward')
   const [totalData, setTotalData] = useState<number>(0)
 
   const pageSize = 5
@@ -68,16 +64,10 @@ export const WinnerHistoryContextProvider = ({
   }
 
   const nextPage = () => {
-    if (navDirection !== 'forward') {
-      setNavDirection('forward')
-    }
     setCurrentPage(currentPage + 1)
   }
 
   const previousPage = () => {
-    if (navDirection !== 'backward') {
-      setNavDirection('backward')
-    }
     setCurrentPage(currentPage - 1)
   }
 
@@ -113,7 +103,6 @@ export const WinnerHistoryContextProvider = ({
         nextPage,
         previousPage,
         paging,
-        navDirection,
       }}
     >
       {children}
