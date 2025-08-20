@@ -53,16 +53,18 @@ export default function SpinWheel() {
                 )
               }
               disabled={
-                isSpinning || winners.length === settings.numOfParticipants
+                isSpinning ||
+                winners.length ===
+                  (settings.maxWinners || settings.numOfParticipants)
               }
               data-testid="button-spin"
-              className="bg-gradient-to-r h-full from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl text-lg font-bold shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="bg-gradient-to-r h-full w-[200px] from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl text-lg font-bold shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               <Play className="w-5 h-5 mr-2" />
-              {isSpinning ? 'BERPUTAR...' : 'PUTAR NOMOR'}
+              {isSpinning ? 'MEMUTAR...' : 'PUTAR'}
             </Button>
 
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-row gap-4 w-[200px]">
               <Button
                 onClick={handleShowResetModal}
                 disabled={isSpinning || winners.length === 0}
@@ -114,9 +116,6 @@ export default function SpinWheel() {
                             .padStart(settings.paddedNumber || 1, '0')
                         : '0'.repeat(settings.paddedNumber || 1)}
                   </motion.div>
-                </div>
-                <div className="text-white/50 text-xs mt-2">
-                  {settings.numOfParticipants}
                 </div>
               </div>
             </div>

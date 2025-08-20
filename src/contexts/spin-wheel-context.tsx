@@ -8,6 +8,7 @@ type SpinWheelContextType = {
   winners: Array<WinnerRecord>
   currentNumber: number
   currentWinners: Array<number>
+  clearWinners: () => void
   resetSpinWheel: () => void
   closeWinnerModal: () => void
   spinNumbers: (
@@ -18,8 +19,9 @@ type SpinWheelContextType = {
   ) => void
 }
 
-type WinnerRecord = {
+export type WinnerRecord = {
   number: number
+  numberPadded: string
   timestamp: Date
 }
 
@@ -29,6 +31,7 @@ export const SpinWheelContext = createContext<SpinWheelContextType>({
   winners: [],
   currentNumber: 0,
   currentWinners: [],
+  clearWinners: () => {},
   resetSpinWheel: () => {},
   closeWinnerModal: () => {},
   spinNumbers: () => {},
@@ -63,7 +66,6 @@ export const SpinWheelContextProvider = ({
   }
 
   const closeWinnerModal = () => {
-    console.log('closeWinnerModal')
     setShowWinnerModal(false)
   }
 
@@ -171,6 +173,7 @@ export const SpinWheelContextProvider = ({
       const timestamp = new Date()
       const newWinnerRecords = newWinners.map((number) => ({
         number,
+        numberPadded: number.toString().padStart(settings.paddedNumber, '0'),
         timestamp,
       }))
       saveWinners(newWinnerRecords)
@@ -205,6 +208,7 @@ export const SpinWheelContextProvider = ({
         winners,
         currentNumber,
         currentWinners,
+        clearWinners,
         resetSpinWheel,
         closeWinnerModal,
         spinNumbers,

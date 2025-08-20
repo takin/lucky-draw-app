@@ -35,7 +35,6 @@ export default function Header() {
     y: 0,
   })
   const { settings, setSettings } = useAppContext()
-  console.log(settings)
 
   const settingsForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,7 +79,7 @@ export default function Header() {
           <h1 className="text-4xl font-bold bg-gradient-to-br from-blue-800 via-purple-600 to-pink-600 bg-clip-text text-transparent">
             {settings.title}
           </h1>
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-700 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-700 via-orange-500 to-yellow-500 bg-clip-text text-center text-transparent">
             {settings.subtitle}
           </h2>
         </div>
